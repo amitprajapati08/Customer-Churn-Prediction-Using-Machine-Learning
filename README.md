@@ -1,272 +1,254 @@
-Customer Churn Prediction using Machine Learning
+#  Customer Churn Prediction using Machine Learning
 
-This project builds a machine learning system to predict telecom customer churn using the Telco Customer Churn dataset.
+> Predicting telecom customer churn using an end-to-end ML pipeline — from EDA to deployment-ready model.
 
-Customer churn occurs when a customer stops using a company's service. Predicting churn helps companies take proactive retention actions, reducing revenue loss and improving customer lifetime value.
+[![Kaggle](https://img.shields.io/badge/Kaggle-Notebook-blue?logo=kaggle)](https://www.kaggle.com/code/amitscode/customer-churn-prediction-using-ml)
+[![Python](https://img.shields.io/badge/Python-3.8%2B-blue)](https://python.org)
+[![Scikit-Learn](https://img.shields.io/badge/Scikit--Learn-ML-orange)](https://scikit-learn.org)
+[![XGBoost](https://img.shields.io/badge/XGBoost-Boosting-green)](https://xgboost.readthedocs.io)
+[![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
+![Problem Type](https://img.shields.io/badge/Problem-Binary%20Classification-blue)
+![Problem Type](https://img.shields.io/badge/Problem-Binary%20Classification-blue)
 
-The project demonstrates an end-to-end machine learning workflow, from data exploration to model evaluation and prediction.
+---
 
-Kaggle Notebook:
-https://www.kaggle.com/code/amitscode/customer-churn-prediction-using-ml
+##  Table of Contents
 
-Business Problem
+- [Business Problem](#-business-problem)
+- [Dataset](#-dataset)
+- [ML Workflow](#-ml-workflow)
+- [Model Performance](#-model-performance)
+- [Key Business Insights](#-key-business-insights)
+- [Technologies Used](#-technologies-used)
+- [Project Structure](#-project-structure)
+- [Future Improvements](#-future-improvements)
+- [Kaggle Notebook](#-kaggle-notebook)
+- [Author](#-author)
 
-Customer acquisition is significantly more expensive than customer retention.
-Telecommunication companies often lose customers due to pricing, contract terms, service quality, or lack of engagement.
+---
 
-This project aims to answer the following business questions:
+##  Business Problem
 
-Which customers are most likely to churn?
+Customer acquisition costs **5–7× more** than customer retention. Telecom companies lose customers daily due to:
 
-What factors contribute most to churn behavior?
+- Pricing dissatisfaction
+- Poor service quality
+- Lack of personalized engagement
+- Competitor offers
 
-Can machine learning help identify high-risk customers early?
+### This project answers:
 
-By predicting churn probability, companies can:
+| Question | Goal |
+|----------|------|
+| Which customers are most likely to churn? | Identify high-risk users early |
+| What factors drive churn? | Understand root causes |
+| Can ML help prevent churn? | Build a predictive retention tool |
 
-Offer targeted retention offers
+### Business Impact:
+- 🎯 Offer targeted retention deals to at-risk customers
+- 💬 Prioritize customer support for high-risk users
+- 💰 Optimize marketing budget allocation
+- 📈 Increase Customer Lifetime Value (CLV)
 
-Improve customer support for high-risk users
+---
 
-Optimize marketing spending
+##  Dataset
 
-Increase customer lifetime value
+**Source:** [Telco Customer Churn Dataset](https://www.kaggle.com/datasets/blastchar/telco-customer-churn)
 
-Dataset
+The dataset captures telecom customer profiles including demographics, billing, service subscriptions, and churn outcome.
 
-Dataset: Telco Customer Churn Dataset
+| Attribute | Detail |
+|-----------|--------|
+| Total Customers | ~7,000 |
+| Total Features | 20+ |
+| Target Variable | `Churn` (Yes / No) |
+| Problem Type | Binary Classification |
 
-The dataset contains telecom customer information including:
+### Target Encoding:
+```
+Churn: Yes → 1  (churned)
+       No  → 0  (retained)
+```
 
-Customer demographics
+### Feature Categories:
+- **Demographics** — Gender, SeniorCitizen, Partner, Dependents
+- **Account Info** — Tenure, Contract type, Payment method
+- **Services** — PhoneService, InternetService, StreamingTV, etc.
+- **Billing** — MonthlyCharges, TotalCharges
 
-Account information
+---
 
-Service subscriptions
+##  ML Workflow
 
-Billing details
+The project follows a structured, reproducible machine learning pipeline:
 
-Churn status
+```
+Data Loading → EDA → Preprocessing → SMOTE → Model Training → Tuning → Evaluation
+```
 
-Dataset characteristics:
+### 1.  Data Loading
+- Import Telco dataset
+- Inspect shape, dtypes, null values
 
-Feature	Description
-Customers	~7,000
-Features	20+
-Target Variable	Churn (Yes / No)
-Problem Type	Binary Classification
+### 2.  Exploratory Data Analysis (EDA)
+Understand patterns that drive churn:
 
-Target Variable:
+| Analysis | Insight |
+|----------|---------|
+| Churn distribution | Class imbalance identified |
+| Contract type vs Churn | Month-to-month → highest churn |
+| Monthly charges vs Churn | Higher charges → more churn |
+| Tenure distribution | New customers churn most |
+| Service usage patterns | Missing services = higher risk |
 
-Churn
+### 3.  Data Preprocessing
+- Label encode categorical variables
+- Handle missing/null values
+- Feature type transformations
+- Binary encode target (`Yes→1`, `No→0`)
 
-Encoded as:
+### 4.  Handling Class Imbalance — SMOTE
 
-Yes → 1
-No → 0
-Machine Learning Workflow
+Churn datasets are naturally imbalanced (far more retained than churned customers).
 
-The project follows a structured machine learning pipeline.
+**Solution:** SMOTE *(Synthetic Minority Oversampling Technique)*
 
-1. Data Loading
+```
+Without SMOTE: Model biased → predicts "No Churn" for everyone
+With SMOTE:    Balanced training → learns churn patterns effectively
+```
 
-The Telco dataset is imported and inspected for structure and missing values.
+**How SMOTE works:**
+1. Finds minority class samples (churned customers)
+2. Generates synthetic neighbours between existing minority points
+3. Balances class distribution before training
 
-2. Exploratory Data Analysis (EDA)
+### 5.  Model Training
 
-EDA is used to understand customer behavior patterns.
+Three models trained and compared:
 
-Key analysis includes:
+| Model | Type | Strength |
+|-------|------|----------|
+| Decision Tree | Tree-based | Interpretable, fast |
+| Random Forest | Ensemble | Robust, handles variance |
+| XGBoost | Gradient Boosting | High accuracy, handles complex patterns |
 
-Churn distribution
+All models handle **non-linear relationships** and **mixed feature types** effectively.
 
-Contract type vs churn
+### 6.  Hyperparameter Tuning — GridSearchCV
 
-Monthly charges vs churn
+Systematic search over parameter combinations:
 
-Tenure distribution
+```python
+param_grid = {
+    'n_estimators': [100, 200, 300],
+    'max_depth': [3, 5, 7, None],
+    'min_samples_split': [2, 5, 10]
+}
+grid_search = GridSearchCV(model, param_grid, cv=5, scoring='roc_auc')
+```
 
-Service usage patterns
+### 7.  Model Evaluation
 
-This step helps identify important churn drivers.
+Metrics used:
 
-3. Data Preprocessing
+| Metric | Why It Matters |
+|--------|----------------|
+| Accuracy | Overall correctness |
+| ROC Curve | Visualizes trade-off between TPR and FPR |
+| AUC Score | Summarizes ROC in a single value (higher = better) |
 
-Data preparation includes:
+> **AUC = 1.0** → Perfect classifier  
+> **AUC = 0.5** → Random guessing  
+> **AUC = 0.82** → Strong discriminative power ✅
 
-Label encoding categorical variables
+---
 
-Handling missing values
+##  Model Performance
 
-Feature transformation
+**Final Model: Random Forest (after tuning)**
 
-Converting churn labels to binary format
+| Metric | Score |
+|--------|-------|
+| Accuracy | ~78% |
+| AUC Score | ~0.82 |
 
-Example:
+An **AUC of 0.82** indicates the model correctly ranks a churned customer above a non-churned customer **82% of the time** — strong performance for a business classification task.
 
-Yes → 1
-No → 0
-4. Handling Class Imbalance
+---
 
-The churn dataset is imbalanced (fewer churn customers than non-churn).
+##  Key Business Insights
 
-To address this, the project uses SMOTE (Synthetic Minority Oversampling Technique).
+| Factor | Observation | Action |
+|--------|-------------|--------|
+| 📄 Contract Type | Month-to-month → highest churn | Incentivize annual contracts |
+| ⏳ Tenure | Short tenure → high churn risk | Onboarding programs for new users |
+| 💵 Monthly Charges | Higher charges → more churn | Loyalty discounts for high-payers |
+| 🛡️ Online Security | Absent → higher churn | Bundle security features |
+| 🧑‍💻 Tech Support | Absent → higher churn | Proactive support outreach |
 
-SMOTE generates synthetic samples for the minority class to improve model learning.
+---
 
-Benefits:
+##  Technologies Used
 
-Reduces bias toward majority class
+| Category | Tools |
+|----------|-------|
+| Language | Python 3.8+ |
+| Data Processing | Pandas, NumPy |
+| Machine Learning | Scikit-Learn, XGBoost |
+| Visualization | Matplotlib, Seaborn |
+| Class Balancing | imbalanced-learn (SMOTE) |
+| Tuning | GridSearchCV |
 
-Improves churn detection performance
+---
 
-5. Model Training
+##  Project Structure
 
-Multiple machine learning models were trained and evaluated:
-
-Decision Tree
-
-Random Forest
-
-XGBoost
-
-These models were selected because they handle non-linear relationships and mixed feature types effectively.
-
-6. Hyperparameter Tuning
-
-Hyperparameter optimization was performed using:
-
-GridSearchCV
-
-This improves model performance by finding optimal values for parameters such as:
-
-number of estimators
-
-tree depth
-
-7. Model Evaluation
-
-Model performance was evaluated using:
-
-Accuracy
-
-ROC Curve
-
-AUC Score
-
-The ROC curve measures the model's ability to distinguish between churn and non-churn customers.
-
-Model Performance
-
-Final model: Random Forest
-
-Performance metrics:
-
-Metric	Score
-Accuracy	~78%
-AUC Score	~0.82
-
-An AUC score of 0.82 indicates strong ability to distinguish churn vs non-churn customers.
-
-Key Business Insights
-
-Analysis of the dataset reveals several important churn patterns:
-
-1. Contract Type
-
-Customers with month-to-month contracts have significantly higher churn rates compared to long-term contracts.
-
-2. Tenure
-
-Customers with short tenure are more likely to churn.
-
-3. Monthly Charges
-
-Higher monthly charges correlate with increased churn probability.
-
-4. Service Features
-
-Customers lacking additional services such as:
-
-Online security
-
-Tech support
-
-show higher churn risk.
-
-These insights can help telecom companies design targeted retention strategies.
-
-Technologies Used
-
-Programming Language
-
-Python
-
-Data Processing
-
-Pandas
-
-NumPy
-
-Machine Learning
-
-Scikit-Learn
-
-Random Forest
-
-Decision Tree
-
-XGBoost
-
-Visualization
-
-Matplotlib
-
-Seaborn
-
-Class Imbalance Handling
-
-SMOTE
-
-Project Structure
-Customer-Churn-Prediction-Using-Machine-Learning
+```
+Customer-Churn-Prediction-Using-Machine-Learning/
 │
-├── Customer_Churn_Prediction_using_ML.ipynb
-├── README.md
-├── model.pkl
-└── requirements.txt
-Future Improvements
+├── Customer_Churn_Prediction_using_ML.ipynb   # Main notebook
+├── model.pkl                                   # Saved trained model
+├── requirements.txt                            # Python dependencies
+└── README.md                                   # Project documentation
+```
 
-Possible extensions to improve the project:
+### Install dependencies:
+```bash
+pip install -r requirements.txt
+```
 
-Deploy the model as a web application using Streamlit
+### Run the notebook:
+```bash
+jupyter notebook Customer_Churn_Prediction_using_ML.ipynb
+```
 
-Implement SHAP explainability to interpret predictions
+---
 
-Build a real-time churn prediction API
+##  Future Improvements
 
-Integrate with customer relationship management (CRM) systems
+| Improvement | Description |
+|-------------|-------------|
+| 🌐 Web App | Deploy via Streamlit for interactive predictions |
+| 🔍 SHAP Explainability | Interpret individual predictions using SHAP values |
+| 🔄 Real-Time API | Build a FastAPI endpoint for live churn scoring |
+| 🗄️ CRM Integration | Connect predictions with Salesforce or HubSpot |
+| 📊 Feature Importance | Deeper analysis of top churn drivers |
 
-Perform feature importance analysis for deeper business insights
+---
 
-Why This Project Matters
+##  Kaggle Notebook
 
-This project demonstrates practical skills required in real-world machine learning roles:
+🔗 [View the full notebook on Kaggle](https://www.kaggle.com/code/amitscode/customer-churn-prediction-using-ml)
 
-Business problem understanding
+---
 
-Data exploration and cleaning
+##  Author
 
-Handling imbalanced datasets
+**Amit Prajapati**  
+Machine Learning & AI enthusiast focused on building practical, data-driven solutions.
 
-Model training and evaluation
+---
 
-Interpreting results for business impact
-
-These skills are critical for data science and machine learning engineering roles.
-
-Author
-
-Amit Prajapati
-
-Machine Learning and AI enthusiast focused on building practical data-driven solutions.
+> ⭐ If you found this project useful, consider starring the repository!
