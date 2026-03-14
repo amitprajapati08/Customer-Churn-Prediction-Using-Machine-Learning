@@ -7,7 +7,9 @@ Dataset: Telco Customer Churn Dataset
 Technologies used:
 - Python
 - Pandas
+- NumPy
 - Scikit-Learn
+- Seaborn
 - XGBoost
 - Random Forest
 - Decision Tree
@@ -15,9 +17,9 @@ Technologies used:
 - SMOTE
 
 Pipeline:
-1. Data preprocessing
-2. Exploratory Data Analysis
-3. Handling class imbalance
+1. Exploratory Data Analysis
+2. Data preprocessing
+3. SMOTE Handling class imbalance
 4. Model training
 5. Hyperparameter tuning
 6. ROC curve evaluation
