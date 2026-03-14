@@ -1,2 +1,28 @@
-# Customer-Churn-Prediction-Using-Machine-Learning
-Machine learning project to predict telecom customer churn using the Telco Customer Churn dataset.
+# Customer Churn Prediction using Machine Learning
+
+This project predicts telecom customer churn using machine learning.
+
+Dataset: Telco Customer Churn Dataset
+
+Technologies used:
+- Python
+- Pandas
+- Scikit-Learn
+- XGBoost
+- Random Forest
+- Decision Tree
+- Matplotlib
+- SMOTE
+
+Pipeline:
+1. Data preprocessing
+2. Exploratory Data Analysis
+3. Handling class imbalance
+4. Model training
+5. Hyperparameter tuning
+6. ROC curve evaluation
+7. Prediction system
+
+Model Performance:
+Accuracy ~78%
+AUC Score ~0.82
